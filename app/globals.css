@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+@layer base {
+  :root {
+    color-scheme: dark;
+    /* Fallbacks so the layout never collapses before fonts resolve. */
+    --font-sans: ui-sans-serif, system-ui, sans-serif;
+    --font-display: ui-sans-serif, system-ui, sans-serif;
+    --font-pixel: ui-monospace, monospace;
+    --font-mono: ui-monospace, monospace;
+  }
+
+  * {
+    @apply border-white/5;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Stops the sticky header covering the top of an anchored section. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    @apply bg-void text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgb(34 211 238 / 0.3);
+    color: #ffffff;
+  }
+
+  /* Always-visible, high-contrast focus ring for keyboard users only. */
+  :focus-visible {
+    outline: 2px solid theme('colors.neon.cyan');
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* Slim neon scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: theme('colors.surface.DEFAULT');
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, theme('colors.neon.violet'), theme('colors.neon.cyan'));
+    border-radius: 9999px;
+    border: 2px solid theme('colors.surface.DEFAULT');
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, theme('colors.neon.cyan'), theme('colors.neon.magenta'));
+  }
+}
+
+/* ==========================================================================
+   COMPONENT UTILITIES
+   ========================================================================== */
+@layer components {
+  /* Glassmorphism surface — the base of every card on the site. */
+  .glass {
+    @apply relative rounded-card border border-white/10 bg-white/[0.035] shadow-card backdrop-blur-xl;
+  }
+
+  /* Retro CRT scanlines. Purely decorative, pointer-events disabled. */
+  .scanlines::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 z-20 rounded-[inherit];
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.028) 0px,
+      rgba(255, 255, 255, 0.028) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* Gradient headline text. */
+  .text-neon-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      100deg,
+      theme('colors.neon.cyan') 0%,
+      theme('colors.neon.violet') 45%,
+      theme('colors.neon.magenta') 100%
+    );
+  }
+
+  /* Small pixel label chip. */
+  .pixel-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-3 py-1.5 text-pixel-xs uppercase tracking-widest text-neon-cyan;
+  }
+
+  /* Pixel corner brackets used on cards/sections for the arcade look. */
+  .pixel-corners::before,
+  .pixel-corners::after {
+    content: '';
+    @apply pointer-events-none absolute h-3 w-3 transition-all duration-300;
+  }
+  .pixel-corners::before {
+    @apply -left-px -top-px border-l-2 border-t-2 border-neon-cyan/50;
+  }
+  .pixel-corners::after {
+    @apply -bottom-px -right-px border-b-2 border-r-2 border-neon-magenta/50;
+  }
+  .group:hover .pixel-corners::before,
+  .group:hover .pixel-corners::after {
+    @apply border-neon-lime;
+  }
+
+  /* Section vertical rhythm */
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8;
+  }
+}
+
+@layer utilities {
+  .text-glow-cyan {
+    text-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
+  }
+  .text-glow-magenta {
+    text-shadow: 0 0 18px rgba(255, 46, 136, 0.55);
+  }
+  /* Screen-reader-only helper (kept local so we don't need the plugin). */
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY — honour reduced-motion everywhere.
+   next/font + Tailwind animations are all disabled for users who ask for it.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Users who explicitly asked for MORE contrast get sharper borders. */
+@media (prefers-contrast: more) {
+  .glass {
+    @apply border-white/30 bg-black/70;
+  }
+}
